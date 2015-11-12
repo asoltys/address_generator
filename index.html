@@ -1,0 +1,52 @@
+<html>
+<head>
+  <script src="bundle.js"></script>
+  <script src="qrcode.js"></script>
+  <script>
+  var bitcoin = require('bitcoinjs-lib')
+  var bigi = require('bigi')
+
+
+  $(function() {
+    var newtx = {
+  inputs: [{addresses: ['CEztKBAYNoUEEaPYbkyFeXC5v8Jz9RoZH9']}],
+  outputs: [{addresses: ['C1rGdt7QEPGiwPMFhNKNhHmyoWpa5X92pn'], value: 100000}]
+};
+$.post('https://api.blockcypher.com/v1/bcy/test/txs/new', JSON.stringify(newtx))
+  .then(function(d) {console.log(d)});
+
+    $('input').keyup(function() { 
+      var hash = bitcoin.crypto.sha256($(this).val())
+      var d = bigi.fromBuffer(hash)
+
+      var keyPair = new bitcoin.ECPair(d, null, {compressed: false})
+      var address = keyPair.getAddress()
+      var privKey = keyPair.toWIF()
+
+      $('#address').html(address)
+      $('#privkey').html(privKey)
+      $('#address_qr, #privkey_qr').html('')
+
+      new QRCode('address_qr', {text: address})
+      new QRCode('privkey_qr', {text: privKey})
+    }).keyup().focus()
+  })
+  </script>
+  <style>
+    body { background: black; color: white; text-align: center; }
+    body, input{ font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; font-size: 24px; }
+    .qr { margin: auto; width: 260px; padding: 20px; background: white; }
+  </style>
+</head>
+<body>
+  <div>
+    <img src="bitcoin.jpg" style=" width: 300px" />
+    <p><input type="text" style="width: 400px"></p>
+    <span id="address"></span><br />
+    <div id="address_qr" class="qr"></div>
+    <br />
+    <span id="privkey"></span><br />
+    <div id="privkey_qr" class="qr"></div>
+  </div>
+</body>
+</html>
