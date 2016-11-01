@@ -6,15 +6,9 @@
   var bitcoin = require('bitcoinjs-lib')
   var bigi = require('bigi')
 
-
   $(function() {
-    var newtx = {
-  inputs: [{addresses: ['CEztKBAYNoUEEaPYbkyFeXC5v8Jz9RoZH9']}],
-  outputs: [{addresses: ['C1rGdt7QEPGiwPMFhNKNhHmyoWpa5X92pn'], value: 100000}]
-};
-$.post('https://api.blockcypher.com/v1/bcy/test/txs/new', JSON.stringify(newtx))
-  .then(function(d) {console.log(d)});
-
+    $('#privkey_div').hide()
+    $('#show_privkey').click(function() { $('#privkey_div').toggle() })
     $('input').keyup(function() { 
       var hash = bitcoin.crypto.sha256($(this).val())
       var d = bigi.fromBuffer(hash)
@@ -34,19 +28,27 @@ $.post('https://api.blockcypher.com/v1/bcy/test/txs/new', JSON.stringify(newtx))
   </script>
   <style>
     body { background: black; color: white; text-align: center; }
-    body, input{ font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; font-size: 24px; }
+    body, input, button { font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; font-size: 24px; }
     .qr { margin: auto; width: 260px; padding: 20px; background: white; }
   </style>
 </head>
 <body>
   <div>
     <img src="bitcoin.jpg" style=" width: 300px" />
+    <div id="instructions">
+      <p>Type a unique passphrase into the box and we'll generate a bitcoin address from it.  Typing the phrase again will bring up the same address and key.</p>
+    </div>
     <p><input type="text" style="width: 400px"></p>
     <span id="address"></span><br />
     <div id="address_qr" class="qr"></div>
     <br />
-    <span id="privkey"></span><br />
-    <div id="privkey_qr" class="qr"></div>
+    <button id="show_privkey">Show Private Key</button>
+    <br />
+    <br />
+    <div id="privkey_div">
+      <span id="privkey"></span><br />
+      <div id="privkey_qr" class="qr"></div>
+    </div>
   </div>
 </body>
 </html>
